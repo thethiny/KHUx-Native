@@ -32,7 +32,8 @@ The game project was named `hole` (build paths `/Users/hojo/Documents/Projects/h
 
 ## Third-party libraries
 
-The newer versions below are expected: cocos2d-x projects take these from the separate, updatable
+The game did not use cocos2d-x 3.2's stock dependency package (v3-deps-5 has libpng 1.6.2, the game
+1.6.16): the C libraries below are newer. That is expected: cocos2d-x projects take these from the separate, updatable
 `cocos2d-x-3rd-party-libs` repository (its build paths, `/Users/guanghui/Github/cocos2d-x-3rd-party-libs-src/...`,
 are in the strings).
 
@@ -46,11 +47,11 @@ are in the strings).
 | libwebp | **0.2.1** | `WebPGetDecoderVersion()` / `WebPGetEncoderVersion()` return 513 (0x000201) |
 | libwebsockets | **1.3** (commit 762deb8) | `lws_get_library_version()` = `"1.3 762deb8"` |
 | FreeType | **2.5.5** | `FT_New_Library` stores the version as 2, 5, 5 |
-| tinyxml2 | **2.x** (exact release: byte check) | 2.0-era API present (`QueryUnsignedText`, typed `XMLPrinter::PushText`); nothing from 3.0+ (`Int64`, `ErrorIDToName`, `GetLineNum`, `DeepClone`) |
-| chipmunk | **6.2.x** (patch level: byte check) | 6.2 additions present (`cpPolyShapeNew2`, `cpBoxShapeNew3`, `cpPolyShapeGetRadius`), the 6.x name `cpShapeNearestPointQuery` (renamed in 7.0) |
+| tinyxml2 | **1.0.9** | the copy in cocos2d-x 3.2's deps package (v3-deps-5), compiled into the game; its API matches the methods present |
+| chipmunk | **6.2.1** | bundled as source in cocos2d-x 3.2 (`external/chipmunk`, `CP_VERSION` 6.2.1); 6.2 API present |
 | Ogg Vorbis | **Tremor** (integer decoder) on **libogg 1.3.x** | `ov_read(vf, buffer, length, bitstream)` - 4 arguments (libvorbis has 7); libogg's `ogg_stream_flush_fill` (new in 1.3.0) and `ogg_stream_iovecin` |
 | LZMA SDK | `LzmaDec` (exact release: byte check) | decoder only (`LzmaDec_*`, `LzmaDecode`); its API has not changed across SDK releases |
-| rapidjson | **pre-1.0** (0.11, cocos2d-x 3.2's copy) | `ParseStream<0, GenericStringStream>` with two template arguments and `AddMember(const char*, int, Allocator&)` - the API before 1.0 |
+| rapidjson | **0.11** (cocos2d-x 3.2's copy) | `ParseStream<0, GenericStringStream>` with two template arguments and `AddMember(const char*, int, Allocator&)` - the API before 1.0 |
 | curl | linked, 4 functions left | the rest was stripped |
 
 ## Counted as game code

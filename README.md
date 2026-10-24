@@ -22,6 +22,20 @@ original. Fixes are made there and reach this repo by updating the submodule.
 Later, the move to the native memory layout and 64-bit. From that point the rewrite is edited here and stops
 matching the original 1:1.
 
+## Building
+
+So far: the engine. From Git Bash on Windows, with CMake installed:
+
+```
+bash tools/build_cocos.sh
+```
+
+It downloads the toolchain (llvm-mingw, clang 18, i686 + libc++), cocos2d-x 3.2 and its dependency package into
+`third_party/`, applies `patches/cocos2d-x-3.2.patch` (17 lines: the 2014 sources with a current compiler, no
+behaviour change), and builds `out/cocos-i686/lib/`: cocos2d, cocostudio, extensions, spine, chipmunk, tinyxml2,
+unzip, xxhash. `tests/layout_check.cpp` checks that this toolchain lays out memory like the original ARM32 build;
+`docs/LIBRARIES.md` lists the library versions the game was built with.
+
 ## Getting the sources
 
 ```

@@ -1,0 +1,81 @@
+--- a/cocos/platform/win32/CCStdC.h
++++ b/cocos/platform/win32/CCStdC.h
+@@ -120,6 +120,7 @@
+ #include <cmath>
+ using std::isnan;
+ 
++#if !defined(MINGW_HAS_SECURE_API) && !defined(__MINGW64_VERSION_MAJOR)   // KHUx-Native: mingw-w64 has both
+ inline int vsnprintf_s(char *buffer, size_t sizeOfBuffer, size_t count,
+                  const char *format, va_list argptr) {
+   return vsnprintf(buffer, sizeOfBuffer, format, argptr);
+@@ -129,6 +130,7 @@
+     strcpy(strDestination, strSource);
+     return 0;
+ }
++#endif
+ 
+ #endif // __MINGW32__
+ 
+--- a/cocos/base/CCRefPtr.h
++++ b/cocos/base/CCRefPtr.h
+@@ -211,7 +211,7 @@
+     
+     inline bool operator > (typename std::remove_const<T>::type * other) const { return _ptr > other; }
+     
+-    inline bool operator > (const std::nullptr_t other) const { return _ptr > other; }
++    inline bool operator > (const std::nullptr_t other) const { return _ptr != nullptr; }   // KHUx-Native: was _ptr > nullptr
+     
+     
+     inline bool operator < (const RefPtr<T> & other) const { return _ptr < other._ptr; }
+@@ -220,7 +220,7 @@
+     
+     inline bool operator < (typename std::remove_const<T>::type * other) const { return _ptr < other; }
+     
+-    inline bool operator < (const std::nullptr_t other) const { return _ptr < other; }
++    inline bool operator < (const std::nullptr_t other) const { return false; }   // KHUx-Native: was _ptr < nullptr
+     
+         
+     inline bool operator >= (const RefPtr<T> & other) const { return _ptr >= other._ptr; }
+@@ -229,7 +229,7 @@
+     
+     inline bool operator >= (typename std::remove_const<T>::type * other) const { return _ptr >= other; }
+     
+-    inline bool operator >= (const std::nullptr_t other) const { return _ptr >= other; }
++    inline bool operator >= (const std::nullptr_t other) const { return true; }   // KHUx-Native: was _ptr >= nullptr
+     
+         
+     inline bool operator <= (const RefPtr<T> & other) const { return _ptr <= other._ptr; }
+@@ -238,7 +238,7 @@
+     
+     inline bool operator <= (typename std::remove_const<T>::type * other) const { return _ptr <= other; }
+     
+-    inline bool operator <= (const std::nullptr_t other) const { return _ptr <= other; }
++    inline bool operator <= (const std::nullptr_t other) const { return _ptr == nullptr; }   // KHUx-Native: was _ptr <= nullptr
+     
+         
+     inline operator bool() const { return _ptr != nullptr; }
+--- a/cocos/3d/CCBundleReader.cpp
++++ b/cocos/3d/CCBundleReader.cpp
+@@ -91,7 +91,7 @@
+     return m_length;
+ }
+ 
+-ssize_t BundleReader::tell()
++long int BundleReader::tell()   // KHUx-Native: as declared
+ {
+     if (!m_buffer)
+         return -1;
+--- a/external/websockets/include/win32/win32helpers/websock-w32.h
++++ b/external/websockets/include/win32/win32helpers/websock-w32.h
+@@ -19,10 +19,7 @@
+ #define random rand
+ #define usleep _sleep
+ 
+-#ifdef  __MINGW64__                                                             
+-#define DEF_POLL_STUFF
+-#endif
+-#ifdef  __MINGW32__                                                             
++#if defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)   /* KHUx-Native: mingw-w64 has pollfd */
+ #define DEF_POLL_STUFF
+ #endif
+ 
