@@ -45,19 +45,20 @@ are in the strings).
 | libjpeg (IJG) | **9** (2013) | `"Copyright (C) 2013, Thomas G. Lane, Guido Vollbeding"` |
 | libwebp | **0.2.1** | `WebPGetDecoderVersion()` / `WebPGetEncoderVersion()` return 513 (0x000201) |
 | libwebsockets | **1.3** (commit 762deb8) | `lws_get_library_version()` = `"1.3 762deb8"` |
-| FreeType | 2.5.x (to confirm) | no version string; the version lives in `FT_Library` at run time. cocos2d-x 3.2's externals carried FreeType 2.5 |
-| tinyxml2 | (to confirm) | classes present (`tinyxml2::XMLElement`, ...), no version string |
-| chipmunk | (to confirm) | sources under `cocos2d/external/chipmunk`; cocos2d-x 3.2 carried chipmunk 6.2 |
-| Ogg Vorbis | (to confirm) | ~180 functions, no version string |
-| LZMA SDK | (to confirm) | `LzmaDec_*` decoder only |
-| rapidjson | the copy in cocos2d-x 3.2's externals | template code only, no version string |
+| FreeType | **2.5.5** | `FT_New_Library` stores the version as 2, 5, 5 |
+| tinyxml2 | **2.x** (exact release: byte check) | 2.0-era API present (`QueryUnsignedText`, typed `XMLPrinter::PushText`); nothing from 3.0+ (`Int64`, `ErrorIDToName`, `GetLineNum`, `DeepClone`) |
+| chipmunk | **6.2.x** (patch level: byte check) | 6.2 additions present (`cpPolyShapeNew2`, `cpBoxShapeNew3`, `cpPolyShapeGetRadius`), the 6.x name `cpShapeNearestPointQuery` (renamed in 7.0) |
+| Ogg Vorbis | **Tremor** (integer decoder) on **libogg 1.3.x** | `ov_read(vf, buffer, length, bitstream)` - 4 arguments (libvorbis has 7); libogg's `ogg_stream_flush_fill` (new in 1.3.0) and `ogg_stream_iovecin` |
+| LZMA SDK | `LzmaDec` (exact release: byte check) | decoder only (`LzmaDec_*`, `LzmaDecode`); its API has not changed across SDK releases |
+| rapidjson | **pre-1.0** (0.11, cocos2d-x 3.2's copy) | `ParseStream<0, GenericStringStream>` with two template arguments and `AddMember(const char*, int, Allocator&)` - the API before 1.0 |
 | curl | linked, 4 functions left | the rest was stripped |
 
-## Not open source
+## Counted as game code
 
-The Square Enix sound engine (`SQEX::*`, `SdSoundSystem_*`, `akb*`) has no upstream: it stays our rewrite.
+The Square Enix sound engine (`SQEX::*`, `SdSoundSystem_*`, `akb*`) is part of the game, not a library: it stays
+our rewrite. It decodes Ogg Vorbis through the Tremor / libogg above.
 
 ## Next checks
 
-The "(to confirm)" rows can be pinned by compiling the candidate upstream version for ARM with the NDK r10e
+The rows marked "byte check" can be pinned by compiling the candidate upstream version for ARM with the NDK r10e
 toolchain and comparing function bodies with the original.
