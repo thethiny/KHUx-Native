@@ -54,6 +54,26 @@ are in the strings).
 | rapidjson | **0.11** (cocos2d-x 3.2's copy) | `ParseStream<0, GenericStringStream>` with two template arguments and `AddMember(const char*, int, Allocator&)` - the API before 1.0 |
 | curl | linked, 4 functions left | the rest was stripped |
 
+## The engine is a modified cocos2d-x 3.2
+
+`tools/engine_diff.py` and `tests/engine_sizes.cpp` compare the game's engine with stock 3.2 built from source.
+
+- **47 functions have no counterpart anywhere in cocos2d-x 3.2** (plugin-x and the LWF renderer aside). Among them:
+  `Image::initWithBtfData` / `isBtf` (the game's BTF texture format), `Node::setColorEffect`,
+  `Node::updateGLProgram`, `Sprite::updateGLProgram`, `Director::addScheduler` / `removeScheduler` /
+  `setDefaultScheduler`, `TextureCache::setLimit` / `getLimit` / `insertTexture`, zip archives read from memory
+  (`unzOpenBuffer`, `*_mem_func`), `Label::setIndent` / `setLineSpacing`, `ui::Text::setConfig`,
+  `TextAtlas::setStringBlend`, `FontAtlas::getBmpFontAtlas`, multi-line text fields (`insertTextNewLine`,
+  `setNewLine`), `FileUtils::fullPathForFilenameEx`, `HttpClient::clearCookies`, `Application::openURL`,
+  `Device::setKeepScreenOn`, `EventDispatcher::removeUnnecessaryEventListeners`, `Card`. Some may be backports from
+  cocos2d-x 3.3+; most are Square Enix's own.
+- **`cocos2d::Node` is 32 bytes larger** in the game (624 bytes vs 592), so every node class is: `Layer`, `Scene`,
+  the `ui::` widgets, `cocostudio::Armature`, ... (+32). `Label` +40, `ParticleSystemQuad` +64. Classes that are not
+  nodes match (`CallFunc`, `SpriteFrame`, `EventListenerTouchOneByOne`).
+
+So the native build needs its own cocos2d-x 3.2: stock 3.2 plus these fields at their offsets plus the added
+functions (all of them are in the binary, decompiled and lifted).
+
 ## Counted as game code
 
 The Square Enix sound engine (`SQEX::*`, `SdSoundSystem_*`, `akb*`) is part of the game, not a library: it stays
