@@ -15,8 +15,8 @@ struct layouts, vtables and behaviour match the code the rewrite was checked aga
 
 Older `GCC: (GNU) 4.4.3`, `4.6.x-google` and `4.8` tags come from prebuilt third-party archives linked in.
 
-Layouts the rewrite depends on (libc++ on 32-bit): `std::string` 12 bytes, `std::function` 20 bytes (16-byte
-buffer, then `__f_`), `std::shared_ptr` 8 bytes.
+Layouts the rewrite depends on (libc++ on 32-bit): `std::string` 12 bytes, `std::function` 24 bytes (16-byte buffer, `__f_` at +16 pointing
+to it, 4 bytes of padding), `std::shared_ptr` 8 bytes.
 
 ## Engine
 
@@ -62,3 +62,9 @@ our rewrite. It decodes Ogg Vorbis through the Tremor / libogg above.
 
 The rows marked "byte check" can be pinned by compiling the candidate upstream version for ARM with the NDK r10e
 toolchain and comparing function bodies with the original.
+
+## Layout check of the native toolchain
+
+`tests/layout_check.cpp` (clang 18 / llvm-mingw, i686, libc++, `-static`): every layout above matches the ARM32
+build - type sizes, 8-aligned 64-bit fields, `std::string` (long and short forms), `std::function`,
+`shared_ptr`, `vector`, the Itanium vtable order. Only `wchar_t` differs (2 bytes on Windows); no game code uses it.
