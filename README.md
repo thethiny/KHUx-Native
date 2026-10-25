@@ -24,17 +24,23 @@ matching the original 1:1.
 
 ## Building
 
-So far: the engine. From Git Bash on Windows, with CMake installed:
+From Git Bash on Windows, with CMake installed:
 
 ```
-bash tools/build_cocos.sh
+bash tools/build_cocos.sh        # the engine: cocos2d-x 3.2 + Square Enix's changes
+python tools/build_deps.py       # its C libraries, from upstream
+python tools/build_hello.py      # out/hello/hello.exe - the first native window
 ```
 
-It downloads the toolchain (llvm-mingw, clang 18, i686 + libc++), cocos2d-x 3.2 and its dependency package into
-`third_party/`, applies `patches/cocos2d-x-3.2.patch` (17 lines: the 2014 sources with a current compiler, no
-behaviour change), and builds `out/cocos-i686/lib/`: cocos2d, cocostudio, extensions, spine, chipmunk, tinyxml2,
-unzip, xxhash. `tests/layout_check.cpp` checks that this toolchain lays out memory like the original ARM32 build;
-`docs/LIBRARIES.md` lists the library versions the game was built with.
+`build_cocos.sh` downloads the toolchain (llvm-mingw, clang 18, i686 + libc++), cocos2d-x 3.2 and its dependency
+package into `third_party/`, applies `patches/cocos2d-x-3.2.patch` (the 2014 sources with a current compiler) and
+`tools/apply_engine_changes.py` (Square Enix's changes: `docs/ENGINE_CHANGES.md`), and builds `out/cocos-i686/lib/`.
+`build_deps.py` builds zlib 1.2.8, libpng 1.6.16, libjpeg 9, FreeType 2.5.5, libtiff 4.0.3, libwebp 0.2.1 (the
+game's versions, `docs/LIBRARIES.md`), GLFW 3.0.4 and GLEW 1.10 into `out/deps/`.
+
+Checks: `tests/layout_check.cpp` (the toolchain lays out memory like the original ARM32 build) and
+`tools/engine_diff.py` (the engine's vtables and class sizes against the game's: 465 / 466 and 301 / 304 identical,
+the rest platform classes). `hello.exe [--quit-after SECONDS]` opens a window with the engine.
 
 ## Getting the sources
 
